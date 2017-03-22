@@ -3,12 +3,17 @@ class ApplicationController < ActionController::API
 
   def hook
     event = request.headers['X-GitHub-Event']
+    action = payload[:action]
 
-    Rails.logger.info "Received an event of type: #{event}"
-
-    send("handle_#{event}")
+    send("handle_#{event}_#{action}")
   rescue NoMethodError
-    Rails.logger.info "We don't handle that type of event yet."
+    Rails.logger.info "We don't handle #{event}.#{action} events yet. Sorry!"
+  end
+
+  def handle_issues_edited
+    repository_id = payload.dig(:repository, :id)
+    issue_number = payload.dig(:issue, :number)
+    octokit.add_comment(repository_id, issue_number, 'I saw that!')
   end
 
   private
@@ -21,12 +26,13 @@ class ApplicationController < ActionController::API
 
   def installation_token
     token, expires_at = redis.hmget(installation_id, 'token', 'expires_at')
-    expires_at = Time.iso8601(expires_at)
 
-    return token if expires_at.future?
+    return token if expires_at && Time.iso8601(expires_at).future?
 
     response = Octokit::Client.new(bearer_token: jwt).
-                 create_integration_installation_access_token(installation_id)
+                 create_integration_installation_access_token(installation_id, {
+                   accept: 'application/vnd.github.machine-man-preview+json'
+                 })
 
     token = response["token"]
     expires_at = response["expires_at"]
@@ -55,22 +61,27 @@ class ApplicationController < ActionController::API
   def github_integration_private_key
     return @private_key if defined?(@private_key)
 
-    @private_key = OpenSSL::PKey::RSA.new(ENV["GITHUB_INTEGRATION_PRIVATE_KEY"])
+    @private_key = OpenSSL::PKey::RSA.new(ENV['GITHUB_INTEGRATION_PRIVATE_KEY'])
   end
 
   def verify_signature
-    request.body.rewind
-
-    body = request.body.read
     webhook_secret = Rails.application.secrets.github_webhook_secret
     digest = OpenSSL::Digest.new('sha1')
-    hexdigest = OpenSSL::HMAC.hexdigest(digest, webhook_secret, body)
+    hexdigest = OpenSSL::HMAC.hexdigest(digest, webhook_secret, payload.to_json)
     signature = "sha1=#{hexdigest}"
     hub_signature = request.headers['X-Hub-Signature']
 
     unless Rack::Utils.secure_compare(signature, hub_signature)
-      render json: { error: "Signature did not match." }, status: 401
+      render json: { error: 'Signature did not match.' }, status: 401
     end
+  end
+
+  def payload
+    return @payload if defined?(@payload)
+
+    request.body.rewind
+
+    @payload = JSON.parse(request.body.read).with_indifferent_access
   end
 
   def redis
