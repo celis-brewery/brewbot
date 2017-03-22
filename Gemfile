@@ -16,6 +16,9 @@ gem 'puma', '~> 3.0'
 # Generate JWTs with ease
 gem 'jwt'
 
+# Arguably the best GitHub API client
+gem 'octokit', github: 'octokit/octokit.rb'
+
 group :development, :test do
   # Call 'binding.pry' anywhere in the code to get a debugger console
   gem 'pry-suite'

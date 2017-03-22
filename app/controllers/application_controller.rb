@@ -13,6 +13,21 @@ class ApplicationController < ActionController::API
 
   private
 
+  def octokit
+    return @octokit if defined?(@octokit)
+
+    @octokit = Octokit::Client.new(bearer_token: installation_token)
+  end
+
+  def installation_token
+    return @installation_token if defined?(@installation_token)
+
+    client = Octokit::Client.new(bearer_token: jwt)
+    id = params.dig(:installation, :id)
+
+    @installation_token = client.create_integration_installation_access_token(id)
+  end
+
   def jwt
     return @jwt if defined?(@jwt)
 
