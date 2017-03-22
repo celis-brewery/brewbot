@@ -13,6 +13,24 @@ class ApplicationController < ActionController::API
 
   private
 
+  def jwt
+    return @jwt if defined?(@jwt)
+
+    payload = {
+      iat: Time.now.to_i,
+      exp: 10.minutes.from_now.to_i,
+      iss: 1822
+    }
+
+    @jwt = JWT.encode(payload, github_integration_private_key, 'RS256')
+  end
+
+  def github_integration_private_key
+    return @private_key if defined?(@private_key)
+
+    @private_key = OpenSSL::PKey::RSA.new(ENV["GITHUB_INTEGRATION_PRIVATE_KEY"])
+  end
+
   def verify_signature
     request.body.rewind
 
@@ -26,11 +44,5 @@ class ApplicationController < ActionController::API
     unless Rack::Utils.secure_compare(signature, hub_signature)
       render json: { error: "Signature did not match." }, status: 401
     end
-  end
-
-  def github_integration_private_key
-    return @private_key if defined?(@private_key)
-
-    @private_key = OpenSSL::PKey::RSA.new(ENV["GITHUB_INTEGRATION_PRIVATE_KEY"])
   end
 end
