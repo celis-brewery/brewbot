@@ -23,6 +23,9 @@ class ApplicationController < ActionController::API
     signature = "sha1=#{hexdigest}"
     hub_signature = request.headers['X-Hub-Signature']
 
+    Rails.logger.info "Received request body: #{body}"
+    Rails.logger.info "Comparing X-Hub-Signature (#{hub_signature}) with our own signature (#{signature})"
+
     unless Rack::Utils.secure_compare(signature, hub_signature)
       render json: { error: "Signature did not match." }, status: 401
     end
