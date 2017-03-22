@@ -7,7 +7,7 @@ class ApplicationController < ActionController::API
     Rails.logger.info "Received an event of type: #{event}"
 
     send("handle_#{event}")
-  rescue LoadError
+  rescue NoMethodError
     Rails.logger.info "We don't handle that type of event yet."
   end
 
