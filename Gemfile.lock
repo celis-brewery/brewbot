@@ -159,6 +159,7 @@ GEM
     rb-fsevent (0.9.8)
     rb-inotify (0.9.8)
       ffi (>= 0.5.0)
+    redis (3.3.3)
     sawyer (0.8.1)
       addressable (>= 2.3.5, < 2.6)
       faraday (~> 0.8, < 1.0)
@@ -194,6 +195,7 @@ DEPENDENCIES
   pry-suite
   puma (~> 3.0)
   rails (~> 5.0.2)
+  redis
   spring
   spring-watcher-listen (~> 2.0.0)
 

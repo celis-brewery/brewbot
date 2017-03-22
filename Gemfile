@@ -19,6 +19,9 @@ gem 'jwt'
 # Arguably the best GitHub API client
 gem 'octokit', github: 'octokit/octokit.rb'
 
+# Ugh
+gem 'redis'
+
 group :development, :test do
   # Call 'binding.pry' anywhere in the code to get a debugger console
   gem 'pry-suite'

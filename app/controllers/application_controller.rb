@@ -20,12 +20,24 @@ class ApplicationController < ActionController::API
   end
 
   def installation_token
-    return @installation_token if defined?(@installation_token)
+    token, expires_at = redis.hmget(installation_id, 'token', 'expires_at')
+    expires_at = Time.iso8601(expires_at)
 
-    client = Octokit::Client.new(bearer_token: jwt)
-    id = params.dig(:installation, :id)
+    return token if expires_at.future?
 
-    @installation_token = client.create_integration_installation_access_token(id)
+    response = Octokit::Client.new(bearer_token: jwt).
+                 create_integration_installation_access_token(installation_id)
+
+    token = response["token"]
+    expires_at = response["expires_at"]
+
+    redis.hmset(installation_id, 'token', token, 'expires_at', expires_at)
+
+    token
+  end
+
+  def installation_id
+    params.dig(:installation, :id)
   end
 
   def jwt
@@ -59,5 +71,13 @@ class ApplicationController < ActionController::API
     unless Rack::Utils.secure_compare(signature, hub_signature)
       render json: { error: "Signature did not match." }, status: 401
     end
+  end
+
+  def redis
+    return @redis if defined?(@redis)
+
+    uri = URI.parse(ENV['REDISTOGO_URL'])
+
+    @redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
   end
 end
