@@ -14,9 +14,12 @@ class ApplicationController < ActionController::API
   private
 
   def verify_signature
+    request.body.rewind
+
+    body = request.body.read
     webhook_secret = Rails.application.secrets.github_webhook_secret
     digest = OpenSSL::Digest.new('sha1')
-    hexdigest = OpenSSL::HMAC.hexdigest(digest, webhook_secret, request.body)
+    hexdigest = OpenSSL::HMAC.hexdigest(digest, webhook_secret, body)
     signature = "sha1=#{hexdigest}"
     hub_signature = request.headers['X-Hub-Signature']
 
