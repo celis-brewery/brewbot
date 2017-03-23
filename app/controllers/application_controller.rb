@@ -39,7 +39,7 @@ class ApplicationController < ActionController::API
     token = response["token"]
     expires_at = response["expires_at"]
 
-    redis.hmset(installation_id, 'token', token, 'expires_at', expires_at)
+    redis.hmset(installation_id, 'token', token, 'expires_at', expires_at.iso8601)
 
     token
   end
