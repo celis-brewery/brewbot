@@ -10,10 +10,12 @@ class ApplicationController < ActionController::API
     Rails.logger.info "We don't handle #{event}.#{action} events yet. Sorry!"
   end
 
-  def handle_issues_edited
-    repository_id = payload.dig(:repository, :id)
-    issue_number = payload.dig(:issue, :number)
-    octokit.add_comment(repository_id, issue_number, 'I saw that!')
+  def handle_pull_request_opened
+    repo = payload.dig(:pull_request, :repo, :full_name)
+    head = payload.dig(:pull_request, :head, :sha)
+    base = payload.dig(:pull_request, :base, :ref)
+
+    octokit.update_ref(repo, head, base, force: true)
   end
 
   private
