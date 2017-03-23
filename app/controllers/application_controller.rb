@@ -11,7 +11,7 @@ class ApplicationController < ActionController::API
   end
 
   def handle_pull_request_opened
-    repo = payload.dig(:pull_request, :repo, :full_name)
+    repo = payload.dig(:pull_request, :base, :repo, :full_name)
     head = payload.dig(:pull_request, :head, :sha)
     base = payload.dig(:pull_request, :base, :ref)
 
