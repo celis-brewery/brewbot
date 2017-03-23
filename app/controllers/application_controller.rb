@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::API
-  before_action :verify_signature, only: [:hook]
+  # before_action :verify_signature, only: [:hook]
 
   def hook
     event = request.headers['X-GitHub-Event']
