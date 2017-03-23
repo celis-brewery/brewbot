@@ -15,7 +15,7 @@ class ApplicationController < ActionController::API
     head = payload.dig(:pull_request, :head, :sha)
     base = payload.dig(:pull_request, :base, :ref)
 
-    octokit.update_ref(repo, head, base, force: true)
+    octokit.update_ref(repo, base, head)
   end
 
   private
