@@ -10,15 +10,6 @@ class ApplicationController < ActionController::API
     Rails.logger.info "We don't handle #{event}.#{action} events yet. Sorry!"
   end
 
-  # Auto-merges any Pull Requests that get opened in the installed repository.
-  def handle_pull_request_opened
-    repo = payload.dig(:pull_request, :base, :repo, :full_name)
-    head = payload.dig(:pull_request, :head, :sha)
-    base = payload.dig(:pull_request, :base, :ref)
-
-    octokit.update_ref(repo, "heads/#{base}", head)
-  end
-
   private
 
   def octokit
