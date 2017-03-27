@@ -27,8 +27,9 @@ Brewbot is simple to set up and requires only configuring several environment va
 
 1. Generate a private key for your integration and note where it was downloaded.
 2. Set your heroku application's `GITHUB_INTEGRATION_PRIVATE_KEY` to be the contents of the file: `heroku config:set GITHUB_INTEGRATION_PRIVATE_KEY="$(cat ~/Downloads/brewbot.pem)"`
-3. Add the free RedisToGo addon: `heroku addons:create redistogo:nano`
-4. Finally, create one more secret (`rake secret`) and assign it to the `SECRET_KEY_BASE` variable: `heroku config:set SECRET_KEY_BASE=$(rake secret)`
+3. Set your heroku application's `GITHUB_INTEGRATION_ID` to be your integration's database identifier , found on the new integration's settings page (`heroku config:set GITHUB_INTEGRATION_ID=1234`)
+4. Add the free RedisToGo addon: `heroku addons:create redistogo:nano`
+5. Finally, create one more secret (`rake secret`) and assign it to the `SECRET_KEY_BASE` variable: `heroku config:set SECRET_KEY_BASE=$(rake secret)`
 
 ### Deploy to Heroku
 

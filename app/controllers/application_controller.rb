@@ -46,7 +46,7 @@ class ApplicationController < ActionController::API
     payload = {
       iat: Time.now.to_i,
       exp: 10.minutes.from_now.to_i,
-      iss: 1822
+      iss: ENV['GITHUB_INTEGRATION_ID'].to_i
     }
 
     @jwt = JWT.encode(payload, github_integration_private_key, 'RS256')
