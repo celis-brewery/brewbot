@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::API
-  # before_action :verify_signature, only: [:hook]
+  before_action :verify_signature, only: [:hook]
 
   def hook
     event = request.headers['X-GitHub-Event']
@@ -10,6 +10,7 @@ class ApplicationController < ActionController::API
     Rails.logger.info "We don't handle #{event}.#{action} events yet. Sorry!"
   end
 
+  # Auto-merges any Pull Requests that get opened in the installed repository.
   def handle_pull_request_opened
     repo = payload.dig(:pull_request, :base, :repo, :full_name)
     head = payload.dig(:pull_request, :head, :sha)
