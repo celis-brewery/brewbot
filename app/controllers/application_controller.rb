@@ -1,6 +1,14 @@
 class ApplicationController < ActionController::API
   before_action :verify_signature, only: [:hook]
 
+  def setup
+    # You could put some additional setup steps here. When creating your
+    # integration on github.com, just enter this as your Setup URL:
+    #
+    # http://my-integration.herokuapp.com/setup
+    render text: "Just kidding, there's no more setup! Go back to GitHub."
+  end
+
   def hook
     event = request.headers['X-GitHub-Event']
     action = payload[:action]
