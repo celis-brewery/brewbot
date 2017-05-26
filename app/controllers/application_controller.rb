@@ -19,11 +19,10 @@ class ApplicationController < ActionController::API
   end
 
   def handle_pull_request_opened
-    repo = payload.dig(:pull_request, :base, :repo, :full_name)
-    head = payload.dig(:pull_request, :head, :sha)
-    base = payload.dig(:pull_request, :base, :ref)
+    repo   = payload.dig(:pull_request, :base, :repo, :full_name)
+    number = payload.dig(:pull_request, :number)
 
-    octokit.update_ref(repo, "heads/#{base}", head)
+    octokit.merge_pull_request(repo, number)
   end
 
   private
