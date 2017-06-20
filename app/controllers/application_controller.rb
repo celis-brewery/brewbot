@@ -75,6 +75,9 @@ class ApplicationController < ActionController::API
 
   def verify_signature
     webhook_secret = Rails.application.secrets.github_webhook_secret
+
+    return true unless webhook_secret.present?
+
     digest = OpenSSL::Digest.new('sha1')
     hexdigest = OpenSSL::HMAC.hexdigest(digest, webhook_secret, payload.to_json)
     signature = "sha1=#{hexdigest}"
