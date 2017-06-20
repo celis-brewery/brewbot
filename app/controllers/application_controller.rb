@@ -3,9 +3,9 @@ class ApplicationController < ActionController::API
 
   def setup
     # You could put some additional setup steps here. When creating your
-    # integration on github.com, just enter this as your Setup URL:
+    # app on github.com, just enter this as your Setup URL:
     #
-    # http://my-integration.herokuapp.com/setup
+    # http://my-app.herokuapp.com/setup
     render text: "Just kidding, there's no more setup! Go back to GitHub."
   end
 
@@ -39,7 +39,7 @@ class ApplicationController < ActionController::API
     return token if expires_at && Time.iso8601(expires_at).future?
 
     response = Octokit::Client.new(bearer_token: jwt).
-                 create_integration_installation_access_token(installation_id, {
+                 create_app_installation_access_token(installation_id, {
                    accept: 'application/vnd.github.machine-man-preview+json'
                  })
 
@@ -61,16 +61,16 @@ class ApplicationController < ActionController::API
     payload = {
       iat: Time.now.to_i,
       exp: 10.minutes.from_now.to_i,
-      iss: ENV['GITHUB_INTEGRATION_ID'].to_i
+      iss: ENV['GITHUB_APP_ID'].to_i
     }
 
-    @jwt = JWT.encode(payload, github_integration_private_key, 'RS256')
+    @jwt = JWT.encode(payload, github_app_private_key, 'RS256')
   end
 
-  def github_integration_private_key
+  def github_app_private_key
     return @private_key if defined?(@private_key)
 
-    @private_key = OpenSSL::PKey::RSA.new(ENV['GITHUB_INTEGRATION_PRIVATE_KEY'])
+    @private_key = OpenSSL::PKey::RSA.new(ENV['GITHUB_APP_PRIVATE_KEY'])
   end
 
   def verify_signature
