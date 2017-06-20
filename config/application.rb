@@ -1,8 +1,6 @@
 require_relative 'boot'
 
-require "rails"
-# Pick the frameworks you want:
-require "action_controller/railtie"
+require "rails/all"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.

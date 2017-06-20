@@ -1,4 +1,4 @@
-class ApplicationController < ActionController::API
+class ApplicationController < ActionController::Base
   before_action :verify_signature, only: [:hook]
 
   def setup

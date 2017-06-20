@@ -18,10 +18,8 @@ Brewbot is simple to set up and requires only configuring several environment va
 
 1. Register a new GitHub App [as a user](https://github.com/settings/apps/new) or [as an organization](https://github.com/organizations/ORG_LOGIN/settings/apps/new).
 2. Fill in the required fields, making sure to enter the "Webhook URL" as your app's `/hook` path (e.g. https://my-test-app.herokuapp.com/hook).
-3. When you hit the optional "Webhook secret" field, run `rake secret` from Brewbot's directory and copy the resulting hexadecimal string.
-4. Paste the secret into the "Webhook secret" field.
-5. Run `heroku config:set GITHUB_WEBHOOK_SECRET=$(pbpaste)`
-6. Continue registering the app, granting it the permissions you need for testing. You can change these later, but I simply gave mine Read & Write permissions for everything.
+3. When you hit the optional "Webhook secret" field, run `rake secret` from Brewbot's directory and copy the resulting hexadecimal string. Paste the secret into the "Webhook secret" field, and run `heroku config:set GITHUB_WEBHOOK_SECRET=$(pbpaste)`. You may also choose to skip this step; the app will run properly without verifying webhook payloads.
+4. Continue registering the app, granting it the permissions you need for testing. You can change these later, but I simply gave mine Read & Write permissions for everything.
 
 ### Configuring the Heroku application with your app's keys
 
